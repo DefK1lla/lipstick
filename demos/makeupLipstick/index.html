@@ -8,6 +8,8 @@
 
     <title>WebAR.rocks.face lipstick demo</title>
 
+    <script src="https://unpkg.com/large-small-dynamic-viewport-units-polyfill@0.1.1/dist/large-small-dynamic-viewport-units-polyfill.min.js"></script>
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r79/three.min.js"></script>
@@ -62,7 +64,8 @@
 
       body {
         width: 100%;
-        height: 100vh;
+        max-height: 100svh;
+        min-height:  calc(var(--1svh, 1vh) * 100);
         display: flex;
         flex-direction: column;
         justify-content: flex-end;

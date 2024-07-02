@@ -76,7 +76,6 @@ const WebARRocksFaceShape2DHelper = (function(){
 
 
   function init_gl(){
-    console.log(1111111)
     _gl = _spec.canvasAR.getContext('webgl', {
       antialias: true,
       depth: false,
