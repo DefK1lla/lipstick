@@ -316,13 +316,21 @@ function createSlider(element) {
     }
   }
 
+  function onTouchMove(e) {
+    if (grabbing) {
+      let newClientX = e.changedTouches[0].clientX;
+      distanceToScroll = newClientX - clientX;
+      element.style.transform = `translateX(${distanceToScroll + prevDistanceScrolled}px)`
+    }
+  }
+
   function addListeners() {
     element.addEventListener('mousedown', onMouseDown);
     element.addEventListener('mouseup', onMouseUp);
     element.addEventListener('mousemove', onMouseMove);
     element.addEventListener('touchstart', onMouseDown);
     element.addEventListener('touchend', onMouseUp);
-    element.addEventListener('touchmove', onMouseMove);
+    element.addEventListener('touchmove', onTouchMove);
   }
 
   function removeListners() {
@@ -332,7 +340,7 @@ function createSlider(element) {
     element.removeEventListener('mousemove', onMouseMove);
     element.removeEventListener('touchstart', onMouseDown);
     element.removeEventListener('touchend', onMouseUp);
-    element.removeEventListener('touchmove', onMouseMove);
+    element.removeEventListener('touchmove', onTouchMove);
   }
 
   const mQuery = window.matchMedia('(max-width: 440px)');

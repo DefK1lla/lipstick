@@ -824,18 +824,11 @@ const WebARRocksFaceShape2DHelper = (function(){
         return new Promise(function(accept, reject){
           domVideo.oncanplay = function(e){
             domVideo.oncanplay = null;
-            let isPlaying = false;
-            const onUserEvent = function(){
-              if (isPlaying) return;
-              domVideo.style.display = 'none';
-              domVideo.play();
-              accept();
-              isPlaying = true;
-            }
-            start(domVideo).then(function(){
-              window.addEventListener('click', onUserEvent); // desktop
-              window.addEventListener('touchstart', onUserEvent); // mobile
-            }).catch(reject);
+            domVideo.style.display = 'none';
+            domVideo.muted = true;
+            domVideo.play();
+            accept();
+            start(domVideo).catch(reject);
           }
         });        
       } else {
