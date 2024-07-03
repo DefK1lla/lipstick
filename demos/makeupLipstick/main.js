@@ -334,6 +334,7 @@ function createSlider(element) {
   }
 
   function removeListners() {
+    console.log(1)
     element.style.transform = 'translateX(0px)';
     element.removeEventListener('mousedown', onMouseDown);
     element.removeEventListener('mouseup', onMouseUp);
@@ -344,6 +345,8 @@ function createSlider(element) {
   }
 
   const mQuery = window.matchMedia('(max-width: 440px)');
+  
+  mQuery.matches ? addListeners() : removeListners()
   mQuery.addEventListener('change', () => mQuery.matches ? addListeners() : removeListners()) 
 }
 
