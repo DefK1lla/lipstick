@@ -367,8 +367,7 @@ function createSlider(element) {
 
   function onTouchMove(e) {
     if (grabbing) {
-      alert('aaaaaaaaa')
-      let newClientX = e.changedTouches[0].clientX;
+      let newClientX = e.touches[0].clientX;
       distanceToScroll = newClientX - clientX;
       element.style.transform = `translateX(${distanceToScroll + prevDistanceScrolled}px)`
     }
