@@ -25,16 +25,10 @@
 
     <!-- INCLUDE LANDMARKS STABILIZER -->
     <script src="../../helpers/landmarksStabilizers/WebARRocksLMStabilizer2.js"></script>
-    <script src="../../helpers/WebARRocksMirror.js"></script>
-    
-    <script type="importmap">
-      {
-        "imports": {
-          "three": "https://cdn.jsdelivr.net/npm/three@<version>/build/three.module.js",
-          "three/addons/": "https://cdn.jsdelivr.net/npm/three@<version>/examples/jsm/"
-        }
-      }
-    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/before-after-slider@1.0.0/dist/slider.bundle.js"></script>
+
+  
     <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
 
     <!-- INCLUDE DEMO SCRIPT -->
@@ -64,8 +58,7 @@
 
       body {
         width: 100%;
-        max-height: 100svh;
-        min-height:  calc(var(--1svh, 1vh) * 100);
+        max-height: 100vh;
         display: flex;
         flex-direction: column;
         justify-content: flex-end;
@@ -128,24 +121,19 @@
         font-size: 12px;
       }
 
+      .inner {
+        position: fixed;
+        bottom: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 9999;
+      }
+
     </style>
 
   </head>
   <body>
-    <div class="image">
-      <canvas width="600" height="600" id='WebARRocksFaceCanvasAR'></canvas>
-      <canvas width="600" height="600" id='WebARRocksFaceCanvasVideo'></canvas>
-    </div>
-    <div>
-      <controls class='controls'>
-        <a class='controlButton controlButtonSelected' style="background-color:rgb(175, 121, 109);" id='colorRed' onclick='change_lipstickColor([1.48, 0.26, 0.26], event)'></a>
-        <a class='controlButton' id='colorBlue' onclick='change_lipstickColor([0.0, 0.0, 1.0], event)'></a>
-        <a class='controlButton' id='colorYellow' onclick='change_lipstickColor([0.0, 0.0, 0.0], event)'></a>
-      </controls>
-      <button class="photoBtn">
-        Сделать фото
-      </button>
-    </div>
+   
   </body>
 </html>
  

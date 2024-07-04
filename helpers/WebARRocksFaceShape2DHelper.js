@@ -798,7 +798,7 @@ const WebARRocksFaceShape2DHelper = (function(){
       };
 
       if (domVideo){
-        initSettings.videoSettings = {videoElement: domVideo};
+        initSettings.videoSettings = { videoElement: domVideo };
       }
 
       WEBARROCKSFACE.init(initSettings);
@@ -847,6 +847,10 @@ const WebARRocksFaceShape2DHelper = (function(){
 
     get_viewHeight: function(){
       return _spec.canvasVideo.height;
+    },
+
+    destroy: function(){
+      WEBARROCKSFACE.destroy();
     }
   } //end that
   return that;

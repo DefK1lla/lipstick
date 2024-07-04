@@ -242,21 +242,6 @@ const SHAPELIPS = {
     }]
 }; //end SHAPELIPS
 
-function start(){
-  WebARRocksFaceShape2DHelper.init({
-    NNCPath: '../../neuralNets/NN_LIPS_8.json',
-    canvasVideo: _canvasVideo,
-    canvasAR: _canvasAR,
-    shapes: [ SHAPELIPS ]
-   // ,videoURL: '../../../../testVideos/1032526922-hd.mov'
-    //,videoURL: '../../../../testVideos/1057538806-hd.mp4'
-  }).then(function(){
-
-  }).catch(function(err){
-    throw new Error(err);
-  });
-}
-
 const COLORS = [
   {
     background: 'rgb(175, 121, 109)',
@@ -292,6 +277,70 @@ const COLORS = [
   }
 ];
 
+
+const videoWidget = `
+   <div class="image">
+      <canvas width="600" height="600" id='WebARRocksFaceCanvasAR'></canvas>
+      <canvas width="600" height="600" id='WebARRocksFaceCanvasVideo'></canvas>
+    </div>
+    <div class='inner'>
+      <controls class='controls'>
+        <a class='controlButton controlButtonSelected' style="background-color:rgb(175, 121, 109);" id='colorRed' onclick='change_lipstickColor([1.48, 0.26, 0.26], event)'></a>
+        <a class='controlButton' id='colorBlue' onclick='change_lipstickColor([0.0, 0.0, 1.0], event)'></a>
+        <a class='controlButton' id='colorYellow' onclick='change_lipstickColor([0.0, 0.0, 0.0], event)'></a>
+      </controls>
+      <button class="photoBtn">
+        Сделать фото
+      </button>
+    </div>
+`
+
+function renderVideoWidget() {
+  document.body.innerHTML = videoWidget;
+  renderControls(COLORS);
+}
+
+function start(){
+  WebARRocksFaceShape2DHelper.init({
+    NNCPath: '../../neuralNets/NN_LIPS_8.json',
+    canvasVideo: _canvasVideo,
+    canvasAR: _canvasAR,
+    shapes: [ SHAPELIPS ]
+   // ,videoURL: '../../../../testVideos/1032526922-hd.mov'
+    //,videoURL: '../../../../testVideos/1057538806-hd.mp4'
+  }).then(function(){
+
+  }).catch(function(err){
+    throw new Error(err);
+  });
+}
+
+function createBeforeAfterSlider(before, after) {
+  document.body.innerHTML = '';
+  const sliderWrapper = document.createElement('div');
+  sliderWrapper.id = 'afterBeforeSlider';
+  document.body.append(sliderWrapper);
+  WebARRocksFaceShape2DHelper.destroy();
+
+  new SliderBar({
+    el: '#afterBeforeSlider',            
+    beforeImg: before, 
+    afterImg: after,    
+    width: "100vw",               
+    height: "100vh",            
+    line: true,                
+    lineColor: "rgba(0,0,0,0.5)" 
+  });
+
+  const goBack = document.createElement('button');
+  goBack.innerHTML = 'Назад';
+  goBack.style.position = 'fixed';
+  goBack.style.top = 0;
+  goBack.style.left = 0;
+  goBack.addEventListener('click', main);
+  document.body.append(goBack);
+}
+
 function createSlider(element) {
   let clientX = null;
   let grabbing = false;
@@ -318,6 +367,7 @@ function createSlider(element) {
 
   function onTouchMove(e) {
     if (grabbing) {
+      alert('aaaaaaaaa')
       let newClientX = e.changedTouches[0].clientX;
       distanceToScroll = newClientX - clientX;
       element.style.transform = `translateX(${distanceToScroll + prevDistanceScrolled}px)`
@@ -334,7 +384,6 @@ function createSlider(element) {
   }
 
   function removeListners() {
-    console.log(1)
     element.style.transform = 'translateX(0px)';
     element.removeEventListener('mousedown', onMouseDown);
     element.removeEventListener('mouseup', onMouseUp);
@@ -345,9 +394,10 @@ function createSlider(element) {
   }
 
   const mQuery = window.matchMedia('(max-width: 440px)');
-  
-  mQuery.matches ? addListeners() : removeListners()
-  mQuery.addEventListener('change', () => mQuery.matches ? addListeners() : removeListners()) 
+
+  if (mQuery.matches) addListeners();
+
+  mQuery.addEventListener('change', () => mQuery.matches ? addListeners() : removeListners()); 
 }
 
 function renderControls(colors) {
@@ -377,16 +427,15 @@ function screenshot() {
   ctx.drawImage(_canvasVideo, 0, 0);
   ctx.drawImage(_canvasAR, 0, 0);
 
-  const base64image = cv.toDataURL('image/png');
-  const hiddenLink = document.createElement('a');
-  hiddenLink.href = base64image
-  hiddenLink.download = 'file.png';
-  hiddenLink.click();
+  const base64ResultImage = cv.toDataURL('image/png');
+  const base64OriginalImage = _canvasVideo.toDataURL('image/png');
+
+  createBeforeAfterSlider(base64OriginalImage, base64ResultImage);
 }
 
 // entry point:
 function main(){
-  renderControls(COLORS);
+  renderVideoWidget();
 
   _canvasAR = document.getElementById('WebARRocksFaceCanvasAR');
   _canvasVideo = document.getElementById('WebARRocksFaceCanvasVideo');
