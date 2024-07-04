@@ -342,13 +342,18 @@ function createBeforeAfterSlider(before, after) {
 }
 
 function createSlider(element) {
-  let clientX = null;
+  let clientX = 0;
   let grabbing = false;
-  let prevDistanceScrolled = null;
-  let distanceToScroll;
+  let prevDistanceScrolled = 0;
+  let distanceToScroll = 0;
 
   function onMouseDown(e) {
     clientX = e.clientX;
+    grabbing = true;
+  }
+
+  function onTouchStart(e) {
+    clientX = e.touches[0].clientX;
     grabbing = true;
   }
 
@@ -369,6 +374,7 @@ function createSlider(element) {
     if (grabbing) {
       let newClientX = e.touches[0].clientX;
       distanceToScroll = newClientX - clientX;
+      console.log(clientX)
       element.style.transform = `translateX(${distanceToScroll + prevDistanceScrolled}px)`
     }
   }
@@ -377,7 +383,7 @@ function createSlider(element) {
     element.addEventListener('mousedown', onMouseDown);
     element.addEventListener('mouseup', onMouseUp);
     element.addEventListener('mousemove', onMouseMove);
-    element.addEventListener('touchstart', onMouseDown);
+    element.addEventListener('touchstart', onTouchStart);
     element.addEventListener('touchend', onMouseUp);
     element.addEventListener('touchmove', onTouchMove);
   }
