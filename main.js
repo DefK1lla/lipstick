@@ -1,10 +1,14 @@
 let _canvasVideo = null, _canvasAR = null;
-let _selectedDOMColorButton = null;
 let mode = null;
+let selectedColor = null;
 
 const sliderArrows = `
   url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABwAAAAcCAYAAAByDd+UAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAMJSURBVHgBvVatjlpBFD6sWRRUAAqSK1AgusWhliosFWBLH6Fv0L5BBQ7RlqBAdCUoqAEHbAIokiUBw48ADKCm882daWYvcy/skuyXnFwyM5zvnDPnZ3x0ARhjGf7JcbnnYnF5J7c2XAZcHrk8+Hy+Nl0DTlTk8sQuB85+9tLpcyGy+OcPlzu1djgcaLVaCTkej2Lt9vaWIpEIhUIh8vv9uoopl4/c4+lZQmnhD5JhWy6X1Ov1aD6fUyAQEAQgAkCMfewlEglKp9MUDAaVKoT7Cyd9cCXkZDnpmUC73abRaESpVEqIInJit9vRbDajbrdLyWRSEGsoctLfJ4QyjH14hvDV63VhbTabdSUyEcPI7XZL+XxehRmefjgJr54clUqFdTod9lrgv9Choa94biRZkex0F2GBZ46wvAjqLlutllq6e5a9yrvNZsPK5TLjIWHXgl8LK5VKbLFYqKUn4SGzi9pS3sE6ZKPbHTmB+zYB945EQ4ZLWOBCSJGZIsXH4zHFYjGjAmRrrVY7Wa9Wq2LPBBCiZDSjciB8j18o6Gg0avQOCuF9oVA42cMa9kyk8BL61uu1WroHoegmKGAUtReZyRiseZFCJ3RLWCAUHQUhddbbZDLxJLuEFDpVKwTXDXlAHeSXTeegzpxrEiDcGCwRUG0KXQfdww3Ywxmcjcfj5DRaM2IDwil+OWJ9MalOhrNOOHJjAMK/+BUOh0WdmepKJ3XCiwzGoCwwviQexTRXraDRaHj2UHQPJ7y60nA4FDo1ZAQtk62Nuy/a0X6/Z9fC0Cbt1iZd/a7CitA0m026FhhT0KWV07f/hHxW/SL7MUSZTEbcJWrqtcB/oUObOFM1hI0DGKmMvgnrYID2bPAEEg7RARkagSyHZwPY+cQo8s9P3VJ0DliKPutGDKJ+vy8mA8IIIzV80t81pkdUTpKKlqfCC2KQmh5ROIMpg+mAPJCAZ1/ldZEroSS1+Afj2lJrUI6JAgL9mQgC3QiJgfRsSi8Be6uHsIE4Q/agxuzEONOf+lOyu9VFT/1/GZ54JgT8JfIAAAAASUVORK5CYII=')
 `;
+
+const lipsIcon = `
+  data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACEAAAAhCAYAAABX5MJvAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAR7SURBVHgBxVhbUuNGFL1X1vyFYHbgWUGcFWB+U5i0mQXA/KXAFGYFtldgqGGo/GFvINaMp/KLWAHOCsKsIJ58ZqS+ObctgR+yLKh53CphJLW7T9/HuafNzXrjHxIaUxFjquJvGddESCYsfP/4UsrEXH28pbDonD5Gjy8/BDurxrSMKUfWOxWRQxa5wKMQ48NV45u7poYPA0A/CUv/7ftgQDnW3G3c+PkDjIliPiWx3bcfgi4VsASgXnRUN4fw9M06MJkgdPex9dpiLV+Ohiu9tM6uRkEfH31spnNS3++9Gf1xljXOywKA3Q8B4B121aIvYJinI2Jv1SutmimvBaEAbEnO8uL+TCCBzhtt8HARyByIk739HiH5roKgWLU80dy8It14w2tngtAkErKfFDF9RVMPIzSsSb8EwiM+uHwfdOgbmMs15tM0LA6E8wLKiL6lISzRj9R6AKFeWEcqX9pcWLBuAoJrQPUXfQdjK4OEtp3lJuMcdRNVXK/xOPD/tRfnYTBxVM2sGZ/2jnFUkte/B8E95VuIq+3CkccJvxlT+RzzHVm79aIkP4NBOfKlgfuXnzf4TstamK81xni3pZclGZRivjnee3WQhyBZd+LldVD1gB/xkFkGmtHnQTDR57pD3GtDG1gRE5dkZ3YjStf6DD2nsw6I68bNurm5HC13UXWx7tABeGbpqhfVI8zcjzw7yApPZhfVcvWmWVtjB5Xb4Hx0UtIJbq2V/tWf2Yw6beOsJLSNhKtQPNUeCFUHYA6P6/thXLLdRTBLIDwheAATEPdflOxZGoIjY6qepW0k0fVxvVFmYqXgj1OcvMkkBvcAJ7eRT410IQ3pfzEZbAwtwVaywPNJvfH3m9HwJS240Y+9nv4fAcgicvc+oqq1NGU8jya+T2EKeM47e69QVbaF/HmdVQAIx50vU7k2Z8miDdUBGlMs6nLGt2jxwuOYbHddj5nRJLXYl52V5Qqe0BItJ5JsyVQHYAdOiGDnoFh5hyZ368qvblZqDZ1Py1pFkZ8DIF1Xc2IC3tSbcAUQt+PjXVNGvoy1/OCZ0I/pGo/P011HCA/iso28UAamVe5fMJOAkHHC4R16oiXJapB49x57v4LAlP67hQURxLCqclcdyuHqmqeqqUT8pOXapydY2rlxbDh0tI3MPk+4Pw/1NpLyVHWisigeVLP0YlGb7dwOhCstyDpVxFlf0JJEjFF+SFL0CPdJHMYbZOgZ1tzdb8/qlwdlpQmYyK5a5jeZJhqu9MLYT/QsACrr7NasfpljTISlo2r76BczmaVmP/IOkO5VDcXM8CoSehMhCbSdUwHTRCYcphbPMnNqW8Pil6Thlbg3K0QBoIUwNFwoHi+9r0Q/ULUIAPWwF3NP5198t3TuUCAJ0lpzb98lKxrZXCjwqJxqASpg7igBTlAAWdS+8iyq+iE9Sy6+E482qYCligvMeZFH87kH4vQs+QBGCGQkAVn6mLswmFOlIMI1WLX7WWP3+wQV/H2CHL1PTRUZP4YDjbDC02Y41RDF56z+D3Zfrq8bdpZuAAAAAElFTkSuQmCC
+`
 
 // tweak contours coefficients - 0 -> no tweak:
 const mouthWiden = 0.01;
@@ -249,48 +253,76 @@ const SHAPELIPS = {
 
 const COLORS = [
   {
-    background: 'rgb(175, 121, 109)',
-    value: [1.75, 1.21, 1.09]
+      "background": "rgb(190, 136, 126)",
+      "value": [1.9, 1.36, 1.26],
+      "hex": "#be887e"
   },
   {
-    background: 'rgb(184, 103, 100)',
-    value: [1.84, 1.03, 1.0]
+      "background": "rgb(196, 106, 114)",
+      "value": [1.96, 1.06, 1.14],
+      "hex": "#c46a72"
   },
   {
-    background: 'rgb(155, 81, 82)',
-    value: [1.55, 0.81, 0.82]
-  }, 
-  {
-    background: 'rgb(195, 106, 96)',
-    value: [1.95, 1.06, 0.96]
+      "background": "rgb(155, 90, 83)",
+      "value": [1.55, 0.9, 0.83],
+      "hex": "#9b5a53"
   },
   {
-    background: 'rgb(196, 111, 110)',
-    value: [1.96, 1.11, 1.10]
+      "background": "rgb(207, 92, 94)",
+      "value": [2.07, 0.92, 0.94],
+      "hex": "#cf5c5e"
   },
   {
-    background: 'rgb(148, 26, 26)',
-    value: [1.48, 0.26, 0.26]
+      "background": "rgb(196, 106, 95)",
+      "value": [1.96, 1.06, 0.95],
+      "hex": "#c46a5f"
   },
   {
-    background: 'rgb(205, 100, 122)',
-    value: [2.05, 1.0, 1.22]
+      "background": "rgb(182, 109, 109)",
+      "value": [1.82, 1.09, 1.09],
+      "hex": "#b66d6d"
   },
   {
-    background: 'rgb(186, 112, 113)',
-    value: [1.86, 1.12, 1.13]
+      "background": "rgb(175, 99, 99)",
+      "value": [1.75, 0.99, 0.99],
+      "hex": "#af6363"
+  },
+  {
+      "background": "rgb(207, 101, 123)",
+      "value": [2.07, 1.01, 1.23],
+      "hex": "#cf657b"
+  },
+  {
+      "background": "rgb(174, 85, 92)",
+      "value": [1.74, 0.85, 0.92],
+      "hex": "#ae555c"
+  },
+  {
+      "background": "rgb(207, 63, 67)",
+      "value": [2.07, 0.63, 0.67],
+      "hex": "#cf3f43"
+  },
+  {
+      "background": "rgb(121, 13, 13)",
+      "value": [1.21, 0.13, 0.13],
+      "hex": "#790d0d"
+  },
+  {
+      "background": "rgb(131, 17, 44)",
+      "value": [1.31, 0.17, 0.44],
+      "hex": "#83112c"
   }
 ];
 
-function componentToHex(c) {
-  var hex = c.toString(16);
+
+const componentToHex = (c) => {
+  const hex = c.toString(16);
   return hex.length == 1 ? "0" + hex : hex;
 }
 
-function rgbToHex(r, g, b) {
+const rgbToHex = (r, g, b) => {
   return "#" + componentToHex(r) + componentToHex(g) + componentToHex(b);
 }
-
 
 function hexToRgb(hex) {
   const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
@@ -393,13 +425,13 @@ const controlButtonStyles = `
 
 const controlButtonOverlay = `
    width: 200%;
-    height: 200%;
-    border-radius: 50%;
-    position: absolute;
-    top: -50%;
-    left: -50%;
-    z-index: -1;
-    background: rgba(249, 211, 231, 1);
+  height: 200%;
+  border-radius: 50%;
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  z-index: -1;
+  background: rgba(249, 211, 231, 1);
 `;
 
 const btnStyles = `
@@ -409,13 +441,16 @@ const btnStyles = `
   border: none;
   outline: none;
   cursor: pointer;
-  font-size: 12px;
+  font-size: 14px;
+  padding: 12px 21px;
 `;
 
 const photoBtnStyles = `
-  position: relative;
+  position: absolute;
+  bottom: 0;
   z-index: 2;
   width: 100%;
+  min-width: 320px;
 `;
 
 const innerStyles = `
@@ -423,7 +458,7 @@ const innerStyles = `
   bottom: 0;
   left: 50%;
   transform: translateX(-50%);
-  z-index: 9999;
+  z-index: 2;
 `;
 
 const controlsStyles = `
@@ -435,8 +470,9 @@ const controlsStyles = `
   min-height: 55px;
   border-radius: 142px;
   position: relative;
+  bottom: 50px;
   z-index: 2;
-  padding: 7px;
+  padding: 7px 21px;
   display: flex;
   flex-direction: row;
   justify-content: center;
@@ -457,9 +493,7 @@ const videoWidget = `
       <canvas width="600" height="600" id="WebARRocksFaceCanvasVideo" style="z-index: 0; ${canvasStyles}"></canvas>
     </div>
     <div class="inner" style="${innerStyles}">
-      <controls class="controls" style="${controlsStyles}">
-      </controls>
-      <button class="photoBtn" style="${photoBtnStyles + btnStyles}">
+      <button class="photoBtn" style="${photoBtnStyles + btnStyles}" onclick="screenshot()">
         Сделать фото
       </button>
     </div>
@@ -476,10 +510,116 @@ const wrapperStyles = `
   overflow: hidden;
 `;
 
-function renderWrapper() {
-  document.write(`
-    <div id="lipstickWrapper" style="${wrapperStyles}"></div>
-  `)
+const mainScreenStyles = `
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: url(https://cdn.jsdelivr.net/gh/defk1lla/lipstick/assets/main-bg.jpg);
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
+`;
+
+const mainScreenTitleStyles = `
+  max-width: 154px;
+  margin-bottom: 10px;
+  font-size: 22px;
+  text-align: center;
+`;
+
+const mainScreenTextStyles = `
+  max-width: 241px;
+  margin-bottom: 35px;
+  text-align: center;
+`;
+
+const mainScreenWidget = `
+  <div style="${mainScreenStyles}">
+    <img src="${lipsIcon}" style="margin-bottom: 11px; margin-top: 36px;" />
+    <div style="${mainScreenTitleStyles}">
+      Попробуй прямо сейчас!
+    </div>
+    <div style="${mainScreenTextStyles}">
+      Сделай или загрузи фото, чтобы примерить помаду
+    </div>
+    <button style="${btnStyles} margin-bottom: 19px" onclick="renderVideoPage()">
+      Использовать камеру
+    </button>
+    <label style="cursor: pointer">
+      <input type="file" style="display: none" onchange="onFileChange(event)" />
+      Выбрать фото
+    </label>
+  </div>
+`;
+
+let cache;
+
+function colorsAreSimilar(color1, color2, tolerance) {
+  return Math.abs(color1[0] - color2[0]) <= tolerance &&
+         Math.abs(color1[1] - color2[1]) <= tolerance &&
+         Math.abs(color1[2] - color2[2]) <= tolerance;
+}
+
+function onFileChange(e) {
+  const reader = new FileReader();
+  reader.readAsDataURL(e.target.files[0]);
+  renderLoader();
+  reader.onload = () => 
+    fetchLipsPoints(reader.result)
+  .then(({ lipData }) => {
+    renderColorWidget();
+    cache = [reader.result, lipData];
+  });
+} 
+
+const loaderStyles = `
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+`;
+
+const loaderWidget = `
+  <div style="${loaderStyles}">
+    <h1>Загрузка...</h1>
+  </div>
+`;
+
+const colorWidgetStyles = `
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: cetner;
+  gap: 15px;
+`;
+
+const colorWidget = `
+  <div style="${colorWidgetStyles}">
+    Выбери цвет
+    <button style="${btnStyles}" onclick="fillImage()">
+      Посмотреть
+    </button>
+  </div>
+`
+
+function renderColorWidget() {
+  document.getElementById('lipstickWrapper').innerHTML = '';
+  renderControls(COLORS);
+  document.querySelector('.inner').innerHTML += colorWidget;
+}
+
+function renderLoader() {
+  const wrapper = document.getElementById('lipstickWrapper');
+  wrapper.innerHTML = loaderWidget;
+}
+
+function renderMainScreen() {
+  document.getElementById('lipstickWrapper').innerHTML = mainScreenWidget;
 }
 
 function renderVideoWidget() {
@@ -488,6 +628,7 @@ function renderVideoWidget() {
 }
 
 function start(){
+  mode = 'video';
   WebARRocksFaceShape2DHelper.init({
     NNCPath: '../../neuralNets/NN_LIPS_8.json',
     canvasVideo: _canvasVideo,
@@ -501,7 +642,10 @@ function start(){
 }
 
 function createBeforeAfterSlider(before, after) {
-  WebARRocksFaceShape2DHelper.destroy();
+  if(mode === 'video') {
+    WebARRocksFaceShape2DHelper.destroy();
+  }
+
   const wrapper = document.getElementById('lipstickWrapper')
   wrapper.innerHTML = '';
   const sliderWrapper = document.createElement('div');
@@ -520,14 +664,18 @@ function createBeforeAfterSlider(before, after) {
     lineColor: "rgba(255,255,255,0.5)" 
   });
 
-  console.log(document.querySelector('.slider-btn::after'))
-
   const goBack = document.createElement('button');
   goBack.innerHTML = 'Назад';
   goBack.style.position = 'fixed';
   goBack.style.top = 0;
   goBack.style.left = 0;
-  goBack.addEventListener('click', main);
+  goBack.addEventListener('click', () => {
+    if (mode === 'video') {
+      renderVideoPage();
+    } else if (mode === 'image') {
+      renderColorWidget();
+    }
+  });
   wrapper.append(goBack);
 }
 
@@ -564,7 +712,6 @@ function createSlider(element) {
     if (grabbing) {
       let newClientX = e.touches[0].clientX;
       distanceToScroll = newClientX - clientX;
-      console.log(clientX)
       element.style.transform = `translateX(${distanceToScroll + prevDistanceScrolled}px)`;
     }
   }
@@ -595,24 +742,44 @@ function createSlider(element) {
   mQuery.addEventListener('change', () => mQuery.matches ? addListeners() : removeListners()); 
 }
 
-function renderControls(colors) {
-  function createItem(i, idx) {
+function renderControls(colors, currentColor = COLORS[0].value) {
+  function createItem(i) {
     return `
       <a
-        class="controlButton ${idx === 0 ? 'controlButtonSelected' : ''}"
+        class="controlButton ${currentColor.toString() === i.value.toString() ? 'controlButtonSelected' : ''}"
         style="background: ${i.background}; ${controlButtonStyles}"
         onclick="change_lipstickColor([${i.value}], event)"
-      >
-        ${idx === 0 ? `<div class='selectedControlButtonOverlay' style="${controlButtonOverlay}"></div>` : '' }
-      </a>
+      ></a>
     `
   }
 
   const controls = document.querySelector('.controls');
   const conrolBtns = colors.map(createItem);
-  
-  controls.innerHTML = conrolBtns.join('');
-  createSlider(controls);
+
+  if(controls) {
+    controls.innerHTML = conrolBtns.join('');
+    createSlider(controls);
+  } else {
+    const inner = document.querySelector('.inner');
+
+    if(inner) {
+      inner.innerHTML += `
+        <controls class="controls" style="${controlsStyles}">
+          ${conrolBtns.join('')}
+        </controls>
+      `;
+    } else {
+      document.getElementById('lipstickWrapper').innerHTML += `
+        <div class="inner" style="${innerStyles}">
+          <controls class="controls" style="${controlsStyles}">
+            ${conrolBtns.join('')}
+          </controls>
+        </div>
+      `
+    }
+
+    createSlider(document.querySelector('.controls'));
+  }
 }
 
 function screenshot() {
@@ -631,7 +798,7 @@ function screenshot() {
 }
 
 async function fetchLipsPoints(imgBase64) {
-  return fetch('http://localhost:4000/api', {
+  return fetch('https://lipstick-bcknd.vercel.app/api', {
     headers: {
       'Content-Type': 'application/json'
     },
@@ -642,50 +809,50 @@ async function fetchLipsPoints(imgBase64) {
   }).then(res => res.json());
 }
 
-function fillImage(src) {
+function fillImage() {
+  mode = 'image';
   const img = new Image();
-  img.src = src;
+  img.src = cache[0];
 
   img.addEventListener('load', () => {
     const cv = document.createElement('canvas');
+    const ctx = cv.getContext('2d');
     cv.height = img.height;
     cv.width = img.width;
-    const ctx = cv.getContext('2d');
+    
     ctx.drawImage(img, 0, 0, img.width, img.height);
+    
+    const imgData = ctx.getImageData(0, 0, cv.width, cv.height);
+    const newHue = hexToHue(rgbToHex.apply(null, selectedColor.map(i => Math.round((i * 100)))));
 
-    fetchLipsPoints(cv.toDataURL()).then(({ lipData }) => {
-      const imgData = ctx.getImageData(0, 0, cv.width, cv.height);
-      const newHue = hexToHue('#C54BB9');
+    for (let index of cache[1]) {
+      const newColor = changeHue(
+        [
+          imgData.data[index * 4],
+          imgData.data[index * 4 + 1],
+          imgData.data[index * 4 + 2]
+        ],
+        newHue
+      );
+      imgData.data[index * 4 + 0] = newColor[0];
+      imgData.data[index * 4 + 1] = newColor[1];
+      imgData.data[index * 4 + 2] = newColor[2];
+    }
 
-      for (let index of lipData) {
-        const newColor = changeHue(
-          [
-            imgData.data[index * 4],
-            imgData.data[index * 4 + 1],
-            imgData.data[index * 4 + 2]
-          ],
-          newHue
-        );
-        imgData.data[index * 4 + 0] = newColor[0];
-        imgData.data[index * 4 + 1] = newColor[1];
-        imgData.data[index * 4 + 2] = newColor[2];
-      }
-
-      ctx.putImageData(imgData, 0, 0);
-
-      createBeforeAfterSlider(src, cv.toDataURL());
-    });
+    ctx.putImageData(imgData, 0, 0);
+    createBeforeAfterSlider(cache[0], cv.toDataURL());
   })
 }
 
 // entry point:
 function main(){
-  renderVideoWidget();
+  renderMainScreen();
 
   document.querySelector('style').innerHTML += `
     .slider-btn {
       width: 3px !important;
       background: rgba(255, 255, 255, 0.5) !important;
+      z-index: 99999999;
     }
     
     .slider-btn::after {
@@ -695,32 +862,51 @@ function main(){
       box-shadow: none !important;
       content: ${sliderArrows} !important;
     }
+
+    #lipstickWrapper {
+      font-szie: 14px;
+      color: #6C4D51;
+      ${wrapperStyles}
+    }
+
+    .controlButtonSelected::after {
+      content: "";
+      ${controlButtonOverlay}
+    }
   `
+}
+
+function renderVideoPage() {
+  mode = 'video';
+
+  renderVideoWidget();
 
   _canvasAR = document.getElementById('WebARRocksFaceCanvasAR');
   _canvasVideo = document.getElementById('WebARRocksFaceCanvasVideo');
 
-  WebARRocksResizer.size_canvas({
+   WebARRocksResizer.size_canvas({
     canvas: _canvasVideo,
     overlayCanvas: [_canvasAR],
     callback: start,
     isFullScreen: true
   });
-  document.querySelector('.photoBtn').addEventListener('click', screenshot);
 }
-
 
 function change_lipstickColor(color, event){
   const selected = document.querySelector('.controlButtonSelected');
+  selectedColor = color;
   
   if(selected) {
     selected.innerHTML = '';
-    selected.classList.remove('controlButtonSelected');
+    selected.classList.toggle('controlButtonSelected');
   }
+
   const domLink = event.target;
-  domLink.classList.add('controlButtonSelected');
-  domLink.innerHTML += `<div style="${controlButtonOverlay}"></div>`
-  WebARRocksFaceShape2DHelper.set_uniformValue('LIPS', 'lipstickColor', color);
+  domLink.classList.toggle('controlButtonSelected');
+
+  if(mode === 'video') {
+    WebARRocksFaceShape2DHelper.set_uniformValue('LIPS', 'lipstickColor', color);
+  }
 }
 
 
