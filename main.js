@@ -630,7 +630,7 @@ function renderVideoWidget() {
 function start(){
   mode = 'video';
   WebARRocksFaceShape2DHelper.init({
-    NNCPath: '../../neuralNets/NN_LIPS_8.json',
+    NNCPath: 'https://cdn.jsdelivr.net/gh/defk1lla/lipstick/neuralNets/NN_LIPS_8.json',
     canvasVideo: _canvasVideo,
     canvasAR: _canvasAR,
     shapes: [ SHAPELIPS ]
